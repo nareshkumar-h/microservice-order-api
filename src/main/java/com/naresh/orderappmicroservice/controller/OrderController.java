@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,14 +31,14 @@ public class OrderController {
 	private UserServiceClient userServiceClient;
 
 	@GetMapping
-	public List<OrderDTO> getList() {
+	public List<OrderDTO> getList(@RequestHeader("Authorization") String authorizationToken ) {
 
 		List<Order> list = orderService.list();
 		List<OrderDTO> orderList = new ArrayList<>();
 
 		for (Order o : list) {
 
-			OrderDTO orderDto = convertTo(o);
+			OrderDTO orderDto = convertTo(authorizationToken,o);
 			orderList.add(orderDto);
 		}
 
@@ -56,22 +55,22 @@ public class OrderController {
 
 		for (Order o : list) {
 
-			OrderDTO orderDto = convertTo(o, user);
+			OrderDTO orderDto = convertTo(authorizationToken, o, user);
 			orderList.add(orderDto);
 		}
 
 		return orderList;
 	}
 
-	private OrderDTO convertTo(Order o) {
-		UserDTO user = userServiceClient.getUser(o.getUserId());
-		Book book = bookServiceClient.getBook(o.getBookId());
+	private OrderDTO convertTo(String authorizationToken, Order o) {
+		UserDTO user = userServiceClient.getUser( o.getUserId());
+		Book book = bookServiceClient.getBook( o.getBookId());
 		OrderDTO orderDto = new OrderDTO(o, user, book);
 		return orderDto;
 	}
 
-	private OrderDTO convertTo(Order o, UserDTO user) {
-		Book book = bookServiceClient.getBook(o.getBookId());
+	private OrderDTO convertTo(String authorizationToken, Order o, UserDTO user) {
+		Book book = bookServiceClient.getBook( o.getBookId());
 		OrderDTO orderDto = new OrderDTO(o, user, book);
 		return orderDto;
 	}

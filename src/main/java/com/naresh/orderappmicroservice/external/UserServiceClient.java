@@ -12,8 +12,10 @@ import com.naresh.orderappmicroservice.dto.UserDTO;
 public interface UserServiceClient {
 
 	 @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET, produces = "application/json")
-	 UserDTO getUser(@PathVariable("userId") Long userId );
+	 UserDTO getUser(@RequestHeader("Authorization") String authorizationToken ,@PathVariable("userId") Long userId );
 	 
+	 @RequestMapping(value = "/users/{userId}", method = RequestMethod.GET, produces = "application/json")
+	 UserDTO getUser(@PathVariable("userId") Long userId );	 
 	 
 	 @RequestMapping(value = "/currentuser", method = RequestMethod.GET, produces = "application/json")
 	 UserDTO getCurrentUser(@RequestHeader("Authorization") String authorizationToken );
